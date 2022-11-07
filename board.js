@@ -1,79 +1,82 @@
 // Possible state of any tile in the game 
-
+// flag var 
 const tile_status = {
-    mine : "mine",
-    hidden : "hidden",
-    number : "number",
-    marked : "marked"
-}
-
-// Setting up board 
-
-function SetBoard(TotalRows,noOfMines) 
-{
+    HIDDEN: "hidden",
+    MINE: "mine",
+    NUMBER: "number",
+    MARKED: "marked",
+  }
+  
+  // Setting up board 
+  
+  export function SetBoard(boardSize, numberOfMines) {
     const board = []
-    
-    const minePostion = MinePos(TotalRows,noOfMines)
-    console.log(minePostion)
-    for(let i = 0 ; i < TotalRows; i++)
-    {
-        const row = []
-        for(let j = 0; j < TotalRows; j++)
-        {
-            const elements = document.createElement("div");
-            elements.dataset.status = tile_status.hidden;
-            const title = {
-                elements,
-                i,
-                j,
-                mine : minePostion.some(MatchPos.bind(null,{i,j})),
-                get status()
-                {
-                    return this.elements.dataset.status
-                },
-                set status(value)
-                {
-                    this.elements.dataset.status = value
-                }
-            }
-            row.push(title);
+    const minePositions = getMinePos(boardSize, numberOfMines)
+    console.log(minePositions)
+  
+    for (let x = 0; x < boardSize; x++) {
+      const row = []
+      for (let y = 0; y < boardSize; y++) {
+        const element = document.createElement("div")
+        element.dataset.status = tile_status.HIDDEN
+  
+        const tile = {
+          element,
+          x,
+          y,
+          mine: minePositions.some(MatchPos.bind(null, { x, y })),
+          get status() {          // getter 
+            return this.element.dataset.status
+          },
+          set status(value) {     // setter
+            this.element.dataset.status = value
+          },
         }
-        board.push(row);
+        row.push(tile)
+      }
+      board.push(row)
     }
     return board
-}
-
-//setting position of mine in the board 
-// Mines placed in unique places only 
-function MinePos(TotalRows,noOfMines)
-{
-    const positions = []
-    while(positions.length < noOfMines)
+  }
+  
+  export function markTile(tile)
+  { 
+    if(
+      tile.status !== tile_status.HIDDEN && tile.status !== tile_status.MARKED)
     {
-        const pos = {
-            x : rand(TotalRows),
-            y : rand(TotalRows)
-        }
-        if(!positions.some(MatchPos.bind(null,pos)))
-        {
-            positions.push(pos);
-        }
+      return
     }
-    return positions;
-}
-
-// Checking if a mine was already present or not
-
-function MatchPos(a,b)
-{
-    return a.x == b.x && a.y == b.y
-}
-
-// Randomly setting a mine in the board 
-
-function rand(nums)
-{
-    return Math.floor(Math.random()*nums)
-}
-
-export {SetBoard}
+    if(tile.status === tile_status.MARKED)
+    {
+      tile.status = tile_status.HIDDEN;
+    }
+    else
+    {
+      tile.status = tile_status.MARKED;
+    }
+  }
+  
+  function getMinePos(boardSize, numberOfMines) {
+    const positions = []
+  
+    while (positions.length < numberOfMines) {
+      const position = {
+        x: rand(boardSize),
+        y: rand(boardSize),
+      }
+  
+      if (!positions.some(MatchPos.bind(null, position))) {
+        positions.push(position)
+      }
+    }
+  
+    return positions
+  }
+  
+  function MatchPos(a, b) {
+    return a.x === b.x && a.y === b.y
+  }
+  
+  function rand(size) {
+    return Math.floor(Math.random() * size)
+  }
