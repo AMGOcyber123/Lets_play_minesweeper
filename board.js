@@ -62,12 +62,12 @@ export function RevealTile(board , tile)
   {
     return
   }
-
   if(tile.mine)
   {
     tile.status = tile_status.MINE;
     return;
   }
+  // recursive solution  
   tile.status = tile_status.NUMBER;
   const adj = surroundingTiles(board,tile); // get the state of all the near by elements
   const mineAt = adj.filter(t => t.mine)
@@ -81,7 +81,23 @@ export function RevealTile(board , tile)
   }
 }
 
-// recursive solution  
+export function checkWin(board)
+{
+  return board.every(row =>{
+    return row.every(tile =>{
+      return (tile.status === tile_status.NUMBER || (tile.mine && (tile.status === tile_status.HIDDEN || tile.status === tile_status.MARKED)));
+    })
+  })
+}
+
+export function checkLoss(board)
+{
+  return board.some(row =>{
+    return row.some(tile =>{
+      return tile.status === tile_status.MINE;
+    })
+  })
+}
 
 // randomly generate values to set mines
 function getMinePos(boardSize, numberOfMines) 
@@ -116,11 +132,9 @@ function rand(size)
 function surroundingTiles(board,{x,y})
 {
   const tiles = []
-  let Xoffset = -1;
-  let Yoffset = -1;
-  for(; Xoffset <=1 ; Xoffset++)
+  for(let Xoffset = -1; Xoffset <=1 ; Xoffset++)
   {
-    for(; Yoffset <= 1; Yoffset++)
+    for(let Yoffset = -1; Yoffset <= 1; Yoffset++)
     {
       const T = board[x+ Xoffset]?.[y + Yoffset];
       if(T) tiles.push(T);
