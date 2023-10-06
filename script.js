@@ -1,65 +1,93 @@
-// HTML file has to run on a server so as to avoid CORS error
-import { tile_status, SetBoard, markTile, RevealTile, checkLoss, checkWin } from "./board.js"
-
-//console.log(SetBoard(2,2));
-let BOARD_SIZE = 10;
-let NO_MINES = 10;
-const board = SetBoard(BOARD_SIZE, NO_MINES);
-const boardElement = document.querySelector(".board")
-const mineLeftText = document.querySelector("[data-mine-count]");
-const subtext = document.querySelector(".subtext");
-//console.log(board)
-
-board.forEach(row => {
+// Import necessary functions and constants from minesweeper.js
+import {
+    TILE_STATUSES,
+    createBoard,
+    markTile,
+    revealTile,
+    checkWin,
+    checkLose,
+  } from "./minesweeper.js";
+  
+  // Define the size of the game board and the number of mines
+  const BOARD_SIZE = 10;
+  const NUMBER_OF_MINES = 3;
+  
+  // Create the game board
+  const board = createBoard(BOARD_SIZE, NUMBER_OF_MINES);
+  
+  // Get references to DOM elements
+  const boardElement = document.querySelector(".board");
+  const minesLeftText = document.querySelector("[data-mine-count]");
+  const messageText = document.querySelector(".subtext");
+  
+  // Add event listeners and build the game board
+  board.forEach(row => {
     row.forEach(tile => {
-        boardElement.append(tile.element)
-        tile.element.addEventListener('click', () => {
-            RevealTile(board, tile);
-            FinalStatus();
-        })
-        tile.element.addEventListener('contextmenu', e => {
-            e.preventDefault();
-            markTile(tile);
-            MinesLeft();
-        })
+      // Append the tile element to the game board
+      boardElement.append(tile.element);
+  
+      // Add click event listener to reveal a tile
+      tile.element.addEventListener("click", () => {
+        revealTile(board, tile);
+        checkGameEnd();
+      });
+  
+      // Add context menu event listener to mark a tile
+      tile.element.addEventListener("contextmenu", e => {
+        e.preventDefault();
+        markTile(tile);
+        listMinesLeft();
+      });
     });
-});
-
-boardElement.style.setProperty("--size", BOARD_SIZE)
-mineLeftText.textContent = NO_MINES;
-
-function MinesLeft() {
-    const markTileCount = board.reduce((count, row) => {
-        return count + row.filter(tile => tile.status == tile_status.MARKED).length
+  });
+  
+  // Set the size of the game board using CSS custom properties
+  boardElement.style.setProperty("--size", BOARD_SIZE);
+  
+  // Initialize the mines left count in the UI
+  minesLeftText.textContent = NUMBER_OF_MINES;
+  
+  // Function to update the mines left count in the UI
+  function listMinesLeft() {
+    const markedTilesCount = board.reduce((count, row) => {
+      return (
+        count + row.filter(tile => tile.status === TILE_STATUSES.MARKED).length
+      );
     }, 0);
-
-    mineLeftText.textContent = NO_MINES - markTileCount
-}
-
-function FinalStatus() {
-    const w = checkWin(board);
-    const l = checkLoss(board);
-    if (w || l) {
-        boardElement.addEventListener("click", stopProp, { capture: true });
-        boardElement.addEventListener("contextmenu", stopProp, { capture: true });
+  
+    minesLeftText.textContent = NUMBER_OF_MINES - markedTilesCount;
+  }
+  
+  // Function to check the game end condition (win or lose)
+  function checkGameEnd() {
+    const win = checkWin(board);
+    const lose = checkLose(board);
+  
+    // Disable further interactions with the board when the game ends
+    if (win || lose) {
+      boardElement.addEventListener("click", stopProp, { capture: true });
+      boardElement.addEventListener("contextmenu", stopProp, { capture: true });
     }
-
-    if (w) {
-        subtext.textContent = "You win !";
+  
+    // Display a message based on the game outcome
+    if (win) {
+      messageText.textContent = "You Win";
     }
-    if (l) {
-        subtext.textContent = "You lose !";
-        board.forEach(row => {
-            row.forEach(tile => {
-                if (tile.status === tile_status.MARKED) markTile(tile)
-                if (tile.mine) RevealTile(board, tile)
-            })
-        })
+    if (lose) {
+      messageText.textContent = "You Lose";
+  
+      // Reveal all marked tiles and mines on a loss
+      board.forEach(row => {
+        row.forEach(tile => {
+          if (tile.status === TILE_STATUSES.MARKED) markTile(tile);
+          if (tile.mine) revealTile(board, tile);
+        });
+      });
     }
-}
-
-// stop the game and terminate the running 
-function stopProp(e) 
-{
-    e.stopImmediatePropagation()
-}
+  }
+  
+  // Function to stop event propagation
+  function stopProp(e) {
+    e.stopImmediatePropagation();
+  }
+  

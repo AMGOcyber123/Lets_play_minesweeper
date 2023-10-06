@@ -1,20 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Gentium+Book+Plus:wght@700&family=Inter:wght@200&family=Montserrat:wght@300;600&family=Nabla&family=Roboto:ital,wght@0,300;0,400;1,100&display=swap" rel="stylesheet"> 
-  <script src="script.js" type="module"></script>
-  <title>Minesweeper</title>
-</head>
-<body>
-  <h3 class="title">Minesweeper</h3>
-  <div class="subtext">
-    Mines Left: <span data-mine-count></span>
-  </div>
-  <div class="board"></div>
-</body>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Minesweeper</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="minesweeper.js"></script>
+    </head>
+
+    <body>
+        <h1>Mines: <span id="mines-count">0</span></h1>
+        <div id="board"></div>
+        <br>
+        <button id="flag-button">🚩</button>
+        <div id="instruction">To flag the boxes click on it once !</div>
+    </body>
 </html>
