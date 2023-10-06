@@ -1,6 +1,7 @@
 # Minesweeper Game
 
 A simple Minesweeper game implemented in HTML, CSS, and JavaScript. This project provides two versions of the Minesweeper game with different implementations.
+Live Testing: https://amgocyber123.github.io/Lets_play_minesweeper/
 
 ## Tech Stack
 
